@@ -34,7 +34,7 @@ import copy
 import numpy
 import pyscf.pbc
 from pyscf.pbc.lib import kpts_helper
-from pyscf.pbc.kccsd_rhf import KRCCSD
+from pyscf.pbc.cc.kccsd_rhf import KRCCSD
 try:  # P
     from mpi4py import MPI  # P
     mpi4py_avail = True  # P

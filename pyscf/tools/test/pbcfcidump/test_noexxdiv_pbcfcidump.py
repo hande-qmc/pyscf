@@ -8,9 +8,9 @@ import pandas
 from pyscf import lib
 from pyscf import gto, scf, ao2mo
 from pyscf.tools import fcidump
-from pyscfdump.helpers.ase_and_cell import build_cell
-from pyscfdump.helpers.scf import run_khf
-import pyscfdump.pbcfcidump
+from helpers.ase_and_cell import build_cell
+from helpers.scf import run_khf
+from pyscf.tools import pbcfcidump
 
 basis = "STO-3G"
 ke_cutoff = 200.0
@@ -69,7 +69,7 @@ class CalcIntegrals(unittest.TestCase):
                                           [0.3333333, 0., 0.]]))
 
     def test_overall_fcidump(self):
-        pyscfdump.pbcfcidump.fcidump(fcid, mf, nmp, scaled_kpts, False,
+        pbcfcidump.fcidump(fcid, mf, nmp, scaled_kpts, False,
                                      keep_exxdiv=False)
         print("testing fcidump")
         df_m  = compare_intdumps(fcid, fcid+"_no", False)
