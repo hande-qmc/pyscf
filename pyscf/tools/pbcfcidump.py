@@ -115,8 +115,8 @@ def write_eri(fout, eri, kconserv, tol=TOL,
     '''
     output_format = float_format + ' %4d %4d %4d %4d\n'
     nkpts = eri.oooo.shape[0]
-    no = eri.oooo.shape[3]
-    nv = eri.vvvv.shape[3]
+    no = eri.oooo.shape[-1]
+    nv = eri.vvvv.shape[-1]
     nor = no+nv
     for kp in range(nkpts):
         for kq in range(nkpts):
@@ -127,13 +127,62 @@ def write_eri(fout, eri, kconserv, tol=TOL,
                 # physics). [k*(1) l(1) | m*(2) n(2)] = <km|ln> is the
                 # integral. kconserve gives n given klm, such that
                 # l-k=n-m (not k-l=n-m)
-                er = eri.eri
-                for i in range(er.shape[3]):
-                    for j in range(er.shape[5]):
-                        for k in range(er.shape[4]):
-                            for l in range(er.shape[6]):
+                for i in range(nor):
+                    for j in range(nor):
+                        for k in range(nor):
+                            for l in range(nor):
                                 # Stored as [ka,kc,kb,a,c,b,d] <- (ab|cd)
-                                v = er[kp, kr, kq, i, k, j, l]
+                                # [todo] could move to another function
+                                if i < no and j < no and k < no and l < no:
+                                    # oooo
+                                    v = eri.oooo[kp, kr, kq, i, k, j, l]
+                                elif i < no and j < no and k < no and l >= no:
+                                    # ooov
+                                    v = eri.ooov[kp, kr, kq, i, k, j, l-no]
+                                elif i < no and j < no and k >= no and l < no:
+                                    # iojokvlo => ovoo
+                                    v = eri.ooov.conj()[kq, ks, kp, j, l, i, k-no]
+                                elif i < no and j >= no and k < no and l < no:
+                                    # iojvkolo => oovo
+                                    v = eri.ooov[kr, kp, ks, k, i, l, j-no]
+                                elif i >= no and j < no and k < no and l < no:
+                                    # vooo
+                                    v = eri.ooov.conj()[ks, kq, kr, l, j, k, i-no]
+                                elif i < no and j < no and k >= no and l >= no:
+                                    # iojokvlv => ovov
+                                    v = eri.ovov[kp, kr, kq, i, k-no, j, l-no]
+                                elif i < no and j >= no and k < no and l >= no:
+                                    # iojvkolv => oovv
+                                    v = eri.oovv[kp, kr, kq, i, k, j-no, l-no]
+                                elif i >= no and j < no and k < no and l >= no:
+                                    # voov
+                                    v = eri.voov[kp, kr, kq, i-no, k, j, l-no]
+                                elif i < no and j >= no and k >= no and l < no:
+                                    # ovvo
+                                    v = eri.voov[kr, kp, ks, k-no, i, l, j-no]
+                                elif i >= no and j < no and k >= no and l < no:
+                                    # ivjokvlo => vvoo
+                                    v = eri.oovv.conj()[kq, ks, kp, j, l, i-no, k-no]
+                                elif i >= no and j >= no and k < no and l < no:
+                                    # ivjvkolo => vovo
+                                    v = eri.ovov[kr, kp, ks, k, i-no, l, j-no]
+                                elif i >= no and j >= no and k >= no and l < no:
+                                    # vvvo
+                                    v = eri.vovv.conj()[kq, ks, kp, j-no, l, i-no, k-no]
+                                elif i >= no and j >= no and k < no and l >= no:
+                                    # ivjvkolv => vovv
+                                    v = eri.vovv[kp, kr, kq, i-no, k, j-no, l-no]
+                                elif i >= no and j < no and k >= no and l >= no:
+                                    # ivjokvlv => vvov
+                                    v = eri.vovv.conj()[ks, kq, kr, l-no, j, k-no, i-no]
+                                elif i < no and j >= no and k >= no and l >= no:
+                                    # ovvv
+                                    v = eri.vovv[kr, kp, ks, k-no, i, l-no, j-no]
+                                elif i >= no and j >= no and k >= no and l >= no:
+                                    # vvvv
+                                    v = eri.vvvv[kp, kr, kq, i-no, k-no, j-no, l-no]
+                                else:
+                                    raise RuntimeError()
                                 if abs(v) > tol:
                                     fout.write(output_format % (
                                         v.real, v.imag, nor*kp+i+1, nor*kq+j+1,

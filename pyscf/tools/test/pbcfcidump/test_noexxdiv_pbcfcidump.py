@@ -34,7 +34,7 @@ def read_in(filename, exchange=False):
     i, a, j, b = numpy.loadtxt(filename, skiprows=skiprows[exchange],
                                unpack=True, usecols=(1,2,3,4), dtype=int)
     # https://stackoverflow.com/questions/3559559/how-to-delete-a-character-from-a-string-using-python
-    integral = numpy.asarray([numpy.complex(
+    integral = numpy.asarray([complex(
         *map(float,inte.replace("(", "").replace(")", "").split(","))
         ) for inte in integral])
     return pandas.DataFrame({'int': integral, 'i': i, 'a': a, 'j': j, 'b': b})
