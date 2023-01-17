@@ -90,7 +90,8 @@ def run_kdft(cell, nmp=[1, 1, 1], gamma=False, df=None):
 
 
 if __name__ == '__main__':
-    from pyscf.tools.test.pbcfcidump.helpers.ase_and_cell import get_ase_diamond_primitive, build_cell
+    from pyscf.pbc.tools.lattice import get_ase_diamond_primitive
+    from pyscf.tools.test.pbcfcidump.helpers.ase_and_cell import build_cell
     ase_atom = get_ase_diamond_primitive()
     cell = build_cell(ase_atom)
     run_hf(cell)
