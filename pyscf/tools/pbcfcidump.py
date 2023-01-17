@@ -122,11 +122,7 @@ def write_eri(fout, eri, kconserv, tol=TOL,
         for kq in range(nkpts):
             for kr in range(nkpts):
                 ks = kconserv[kp, kq, kr]
-                # The documentation in pyscf/pbc/lib/kpts_helper.py in
-                # get_kconserv is inconsistent with the actual code (and
-                # physics). [k*(1) l(1) | m*(2) n(2)] = <km|ln> is the
-                # integral. kconserve gives n given klm, such that
-                # l-k=n-m (not k-l=n-m)
+                # ks is the (single) allowes k-point conserving symmetry
                 er = eri.eri
                 for i in range(er.shape[3]):
                     for j in range(er.shape[5]):
@@ -357,11 +353,7 @@ def exchange_integrals(comm, mf, nmo, kconserv, fout, kstart, kpts):
             for p in range(nmo):
                 for pk in range(nkpts):
                     for q in range(nmo):
-                        # The documentation in pyscf/pbc/lib/kpts_helper.py in
-                        # get_kconserv is inconsistent with the actual code
-                        # (and physics). [k*(1) l(1) | m*(2) n(2)] = <km|ln> is
-                        # the integral. kconserve gives n given klm, such that
-                        # l-k=n-m (not k-l=n-m).
+                        # ks is the (single) allowes k-point conserving symmetry
                         # Since we want (iq|pi) = <ip|qi> = <pi|iq>, we use the
                         # following lookup
                         # Might need to check the ordering of this!
